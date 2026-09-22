@@ -1,72 +1,55 @@
-import { Injectable, Signal, WritableSignal, computed, inject, signal } from '@angular/core';
+import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap, catchError, of } from 'rxjs';
 import { Router } from '@angular/router';
-import { AuthResponse, LoginCredentials, SignupCredentials, User } from '../../models/auth.model';
+import { Observable, tap, catchError, of } from 'rxjs';
+import { environment } from '../../../environments/environment';
+import { LoginRequest, RegisterRequest } from '../../models/auth.model';
 
-@Injectable({
-  providedIn: 'root'
-})
+interface CurrentUser {
+  userId: string;
+  email: string;
+  displayName: string;
+}
+
+@Injectable({ providedIn: 'root' })
 export class AuthService {
-  private http = inject(HttpClient);
-  private router = inject(Router);
+  private currentUserSignal = signal<CurrentUser | null>(null);
 
-  private readonly API_URL = 'http://localhost:8080/api/v1';
+  currentUser = computed(() => this.currentUserSignal());
+  isAuthenticated = computed(() => !!this.currentUserSignal());
 
-  private currentUserSignal: WritableSignal<User | null> = signal<User | null>(null);
+  constructor(private http: HttpClient, private router: Router) {}
 
-  readonly currentUser: Signal<User | null> = this.currentUserSignal.asReadonly();
-  readonly isAuthenticated: Signal<boolean> = computed(() => !!this.currentUserSignal());
-
-  // Removed fetchMe() call from constructor to let authGuard control route hydration
-
-  signup(credentials: SignupCredentials): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(
-      `${this.API_URL}/auth/register`,
-      credentials,
-      { withCredentials: true }
-    ).pipe(
-      tap((res) => {
-        if (res.user) {
-          this.currentUserSignal.set(res.user);
-        }
-      })
-    );
+  signup(payload: RegisterRequest): Observable<CurrentUser> {
+    return this.http
+      .post<CurrentUser>(`${environment.apiUrl}/auth/register`, payload, { withCredentials: true })
+      .pipe(tap(res => this.currentUserSignal.set(res)));
   }
 
-  login(credentials: LoginCredentials): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(
-      `${this.API_URL}/auth/login`,
-      credentials,
-      { withCredentials: true }
-    ).pipe(
-      tap((res) => {
-        if (res.user) {
-          this.currentUserSignal.set(res.user);
-        }
-      })
-    );
+  login(payload: LoginRequest): Observable<CurrentUser> {
+    return this.http
+      .post<CurrentUser>(`${environment.apiUrl}/auth/login`, payload, { withCredentials: true })
+      .pipe(tap(res => this.currentUserSignal.set(res)));
   }
 
-  fetchMe(): Observable<User | null> {
-    return this.http.get<User>(
-      `${this.API_URL}/auth/me`,
-      { withCredentials: true }
-    ).pipe(
-      tap((user) => this.currentUserSignal.set(user)),
+  logout(): void {
+    this.http.post(`${environment.apiUrl}/auth/logout`, {}, { withCredentials: true }).subscribe({
+      complete: () => {
+        this.currentUserSignal.set(null);
+        this.router.navigate(['/login']);
+      }
+    });
+  }
+
+  // Asks the API "is my cookie still valid?" — used by the guard on cold loads/refreshes,
+  // since an HttpOnly cookie can't be read from JS to check locally.
+  fetchMe(): Observable<CurrentUser | null> {
+    return this.http.get<CurrentUser>(`${environment.apiUrl}/auth/me`, { withCredentials: true }).pipe(
+      tap(res => this.currentUserSignal.set(res)),
       catchError(() => {
         this.currentUserSignal.set(null);
         return of(null);
       })
     );
-  }
-
-  logout(): void {
-    this.http.post(`${this.API_URL}/auth/logout`, {}, { withCredentials: true }).pipe(
-      catchError(() => of(null))
-    ).subscribe(() => {
-      this.currentUserSignal.set(null);
-      this.router.navigate(['/login']);
-    });
   }
 }
