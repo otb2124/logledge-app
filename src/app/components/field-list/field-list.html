@@ -1,0 +1,111 @@
+<div [class]="direction === 'horizontal' ? 'flex flex-row flex-wrap items-center gap-2 w-full' : 'flex flex-col gap-3 w-full'">
+  @for (field of visibleFields(); track field.path) {
+    @let isFullWidth = fullWidthControls || ['editable-table', 'accordion', 'list'].includes(field.kind);
+
+    <div [class]="
+      direction === 'horizontal'
+        ? (isFullWidth ? 'w-full' : 'flex-1 min-w-[120px] max-w-md')
+        : (isFullWidth ? 'w-full' : 'w-full max-w-md')
+    ">
+      @switch (field.kind) {
+        @case ('text') {
+          <app-input-text-control
+            [label]="hideLabels ? '' : field.label"
+            [type]="field.inputType ?? 'text'"
+            [maxlength]="field.maxlength ?? null"
+            [value]="getValue(field.path)"
+            (valueChange)="setValue(field.path, $event)">
+          </app-input-text-control>
+        }
+        @case ('number') {
+          <app-input-number-control
+            [label]="hideLabels ? '' : field.label"
+            [step]="field.step ?? 1"
+            [min]="field.min ?? null"
+            [max]="field.max ?? null"
+            [minFractionDigits]="field.minFractionDigits ?? 0"
+            [maxFractionDigits]="field.maxFractionDigits ?? 2"
+            [prefix]="field.prefix"
+            [suffix]="field.suffix"
+            [value]="getValue(field.path)"
+            (valueChange)="setValue(field.path, $event)">
+          </app-input-number-control>
+        }
+        @case ('select') {
+          <app-select-control
+            [label]="hideLabels ? '' : field.label"
+            [options]="field.options"
+            [value]="getValue(field.path)"
+            (valueChange)="setValue(field.path, $event)">
+          </app-select-control>
+        }
+        @case ('tree-select') {
+          <app-tree-select-control
+            [label]="hideLabels ? '' : field.label"
+            [options]="field.options"
+            [selectionMode]="field.selectionMode ?? 'single'"
+            [placeholder]="field.placeholder ?? ''"
+            [value]="getValue(field.path)"
+            (valueChange)="setValue(field.path, $event)">
+          </app-tree-select-control>
+        }
+        @case ('boolean') {
+          <app-boolean-control
+            [label]="hideLabels ? '' : field.label"
+            [value]="getValue(field.path)"
+            (valueChange)="setValue(field.path, $event)">
+          </app-boolean-control>
+        }
+        @case ('resource-picker') {
+          <app-resource-picker-control
+            [label]="hideLabels ? '' : field.label"
+            [itemName]="getValue(field.path)"
+            [actions]="field.actions"
+            (actionSelected)="onResourceAction(field.path, $event)">
+          </app-resource-picker-control>
+        }
+        @case ('color') {
+          <app-color-picker-control
+            [label]="hideLabels ? '' : field.label"
+            [allowAlpha]="field.allowAlpha ?? true"
+            [value]="getValue(field.path)"
+            (valueChange)="setValue(field.path, $event)">
+          </app-color-picker-control>
+        }
+        @case ('image-select') {
+          <app-image-select-control
+            [label]="hideLabels ? '' : field.label"
+            [options]="field.options"
+            [size]="field.size ?? 'md'"
+            [showItemLabels]="field.showItemLabels ?? true"
+            [value]="getValue(field.path)"
+            (valueChange)="setValue(field.path, $event)">
+          </app-image-select-control>
+        }
+        @case ('list') {
+          <app-list-control
+            [label]="hideLabels ? '' : field.label"
+            [itemConfig]="field.itemConfig"
+            [value]="getValue(field.path)"
+            (valueChange)="setValue(field.path, $event)">
+          </app-list-control>
+        }
+        @case ('editable-table') {
+          <app-editable-table-control
+            [label]="hideLabels ? '' : field.label"
+            [columns]="field.columns"
+            [allowAdd]="field.allowAdd ?? true"
+            [allowDelete]="field.allowDelete ?? true"
+            [allowReorder]="field.allowReorder ?? false"
+            [value]="getValue(field.path)"
+            (valueChange)="setValue(field.path, $event)">
+          </app-editable-table-control>
+        }
+      }
+
+      @if (isTouched(field.path) && getErrors()[field.path]) {
+        <small class="p-error">{{ getErrors()[field.path] }}</small>
+      }
+    </div>
+  }
+</div>

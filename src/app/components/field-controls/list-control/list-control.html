@@ -1,0 +1,52 @@
+<div class="flex flex-col gap-1.5 w-full">
+  <!-- List Label -->
+  @if (label) {
+    <span class="text-xs font-medium text-gray-400 dark:text-gray-500">{{ label }}</span>
+  }
+
+  <!-- Horizontal wrapping container -->
+  <div class="flex flex-row flex-wrap items-center gap-2 w-full">
+    <!-- Existing Items -->
+    @for (item of value; track $index; let i = $index) {
+      <div class="inline-flex items-center gap-1">
+        
+        <!-- Rendered Control -->
+        <app-field-list
+          [fields]="getItemFieldConfig(i)"
+          [model]="getItemModel(i)"
+          [hideLabels]="true"
+          direction="horizontal"
+          (modelChange)="onModelChange(i, $event)"
+          [fullWidthControls]="false">
+        </app-field-list>
+
+        <!-- Remove Icon -->
+        @if (!readonly) {
+          <p-button
+            class="text-xs text-gray-400 cursor-pointer shrink-0"
+            severity="secondary"
+            [text]="true"
+            (click)="removeItem(i)"
+            size="small"
+            pTooltip="Remove item"
+            icon="pi pi-times"
+            tooltipPosition="top">
+          </p-button>
+        }
+      </div>
+    }
+
+    <!-- Add Button (+) -->
+    @if (!readonly) {
+      <p-button
+        icon="pi pi-plus"
+        [outlined]="true"
+        severity="secondary"
+        size="small"
+        (onClick)="addItem()"
+        pTooltip="Add item"
+        tooltipPosition="top">
+      </p-button>
+    }
+  </div>
+</div>

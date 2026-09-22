@@ -38,11 +38,13 @@ export const routes: RouteChild[] = [
   {
     path: "login",
     title: "Login",
-    loadComponent: () => import('./components/login-form/login-form.component').then(m => m.LoginFormComponent),
+    data: { id: "login" },
+    loadComponent: () => import('./pages/auth/auth.page.component').then(m => m.AuthPageComponent),
   },
   {
     path: "signup",
     title: "Signup",
-    loadComponent: () => import('./components/signup-form/signup-form.component').then(m => m.SignupFormComponent),
+    data: { id: "signup" },
+    loadComponent: () => import('./pages/auth/auth.page.component').then(m => m.AuthPageComponent),
   },
 ];

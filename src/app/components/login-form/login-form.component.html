@@ -5,42 +5,13 @@
       <p-message severity="error" [text]="errorMessage()!" class="w-full mb-3 block" />
     }
 
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-column gap-3">
-      <div class="flex flex-column gap-2">
-        <label for="email" class="font-semibold">Email</label>
-        <input
-          pInputText
-          id="email"
-          type="email"
-          formControlName="email"
-          placeholder="user@example.com"
-          class="w-full"
-        />
-        @if (loginForm.controls.email.touched && loginForm.controls.email.invalid) {
-          <small class="p-error">Valid email is required.</small>
-        }
-      </div>
-
-      <div class="flex flex-column gap-2">
-        <label for="password" class="font-semibold">Password</label>
-        <p-password
-          id="password"
-          formControlName="password"
-          [feedback]="false"
-          [toggleMask]="true"
-          styleClass="w-full"
-          inputStyleClass="w-full"
-        />
-        @if (loginForm.controls.password.touched && loginForm.controls.password.invalid) {
-          <small class="p-error">Password is required.</small>
-        }
-      </div>
+    <form (ngSubmit)="onSubmit()" class="flex flex-column gap-3">
+      <app-field-list [model]="model" [fields]="fields"></app-field-list>
 
       <p-button
         type="submit"
         label="Sign In"
         [loading]="isLoading()"
-        [disabled]="loginForm.invalid"
         styleClass="w-full mt-2"
       />
     </form>
