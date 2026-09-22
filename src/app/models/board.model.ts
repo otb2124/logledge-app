@@ -26,6 +26,35 @@ export interface TicketSummary {
   position: number;
 }
 
+export interface TicketDetail {
+  id: number;
+  title: string;
+  description: string | null;
+  priority: 'Low' | 'Medium' | 'High';
+  position: number;
+  boardListId: number;
+}
+
+export interface CreateTicketRequest {
+  title: string;
+  priority: 'Low' | 'Medium' | 'High';
+}
+
+export interface UpdateTicketRequest {
+  title: string;
+  description: string | null;
+  priority: 'Low' | 'Medium' | 'High';
+}
+
+export interface ReorderTicketsRequest {
+  orderedTicketIds: number[];
+}
+
+export interface MoveTicketRequest {
+  targetListId: number;
+  position: number;
+}
+
 export interface CreateBoardRequest {
   name: string;
 }

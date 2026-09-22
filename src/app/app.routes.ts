@@ -36,6 +36,27 @@ export const routes: RouteChild[] = [
     ],
   },
   {
+    path: "boards",
+    title: "Boards",
+    canActivate: [authGuard],
+    children: [
+      {
+        path: "",
+        pathMatch: "full",
+        loadComponent: () => import('./pages/boards/boards.component').then(m => m.BoardsPageComponent),
+      },
+      {
+        path: ":boardId",
+        pathMatch: "full",
+        loadComponent: () => import('./components/board/board.component').then(m => m.BoardComponent),
+      },
+      {
+        path: ":boardId/tickets/:ticketId",
+        loadComponent: () => import('./pages/ticket/ticket.component').then(m => m.TicketPageComponent),
+      },
+    ],
+  },
+  {
     path: "login",
     title: "Login",
     data: { id: "login" },

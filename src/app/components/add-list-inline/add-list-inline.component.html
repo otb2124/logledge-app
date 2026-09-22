@@ -1,0 +1,25 @@
+@if (editing()) {
+  <div class="w-72 shrink-0 bg-surface-800 rounded-lg p-3">
+    <input
+      [(ngModel)]="name"
+      (keydown.enter)="submit()"
+      (keydown.escape)="cancel()"
+      placeholder="Enter list name..."
+      class="w-full bg-surface-700 text-white text-sm rounded p-2 border-none focus:outline-none"
+      autofocus
+    />
+    <div class="flex gap-2 mt-2">
+      <p-button label="Add list" size="small" [loading]="saving()" (onClick)="submit()" />
+      <button (click)="cancel()" class="bg-transparent border-none text-surface-400 hover:text-white cursor-pointer">
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+  </div>
+} @else {
+  <button
+    (click)="startAdding()"
+    class="w-72 shrink-0 text-left text-surface-400 hover:text-white hover:bg-surface-800 rounded-lg p-3 text-sm bg-transparent border-none cursor-pointer"
+  >
+    + Add another list
+  </button>
+}

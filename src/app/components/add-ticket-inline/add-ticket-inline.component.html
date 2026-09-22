@@ -1,0 +1,26 @@
+@if (editing()) {
+  <div class="bg-surface-700 rounded-md p-2">
+    <textarea
+      [(ngModel)]="title"
+      (keydown.enter)="$event.preventDefault(); submit()"
+      (keydown.escape)="cancel()"
+      placeholder="Enter a title..."
+      rows="2"
+      class="w-full bg-surface-800 text-white text-sm rounded p-2 border-none resize-none focus:outline-none"
+      autofocus
+    ></textarea>
+    <div class="flex gap-2 mt-2">
+      <p-button label="Add" size="small" [loading]="saving()" (onClick)="submit()" />
+      <button (click)="cancel()" class="bg-transparent border-none text-surface-400 hover:text-white cursor-pointer">
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+  </div>
+} @else {
+  <button
+    (click)="startAdding()"
+    class="text-left text-surface-400 hover:text-white hover:bg-surface-700 rounded-md p-2 text-sm bg-transparent border-none cursor-pointer"
+  >
+    + Add a ticket
+  </button>
+}

@@ -29,6 +29,10 @@ export class BoardListService {
     return this.http.patch<void>(`${this.baseUrl(boardId)}/${listId}/position`, payload, { withCredentials: true });
   }
 
+  reorderLists(boardId: number, payload: { orderedListIds: number[] }): Observable<void> {
+    return this.http.patch<void>(`${this.baseUrl(boardId)}/reorder`, payload, { withCredentials: true });
+  }
+
   deleteList(boardId: number, listId: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl(boardId)}/${listId}`, { withCredentials: true });
   }
